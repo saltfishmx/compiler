@@ -1,2 +1,2 @@
-# complier
-code of compliers principles course
+# compiler
+code of compilers principles course
