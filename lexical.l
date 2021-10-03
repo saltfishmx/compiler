@@ -14,6 +14,8 @@ digit [0-9]
 letter [a-zA-Z]
 INT 0|[1-9]+[0-9]*
 FLOAT {digit}+"."{digit}+
+hexletter [0-9a-fA-F]
+hexhead 0x|0X
 ID (_|{letter})(_|{letter}|{digit}){0,31}
 SEMI ;
 COMMA ","
@@ -43,7 +45,33 @@ IF if
     yylval.node = malloc_node("INT",INT,&val,yylineno);
     return INT;
     }
-{FLOAT} {
+0[0-7]+ {
+    int val = 0;
+    sscanf(yytext, "%o", &val);
+    yylval.node = malloc_node("INT",INT,&val,yylineno);
+    return INT;
+}
+0{digit}*[8-9]+{digit}* {
+    error = 1;
+    int val = 0;
+    yylval.node = malloc_node( "INT", INT, &val,yylineno);
+    printf("Error type A at Line %d: Illegal octal number '%s'.\n", yylineno, yytext);
+    return INT;
+}
+{hexhead}{hexletter} {
+    int val = 0;
+    sscanf(yytext, "%x", &val);
+    yylval.node = malloc_node("INT",INT,&val,yylineno);
+    return INT;    
+}
+{hexhead}{hexletter}*[g-zG-Z]+{hexletter}* {
+    error = 1;
+    int val = 0;
+    yylval.node = malloc_node( "INT", INT, &val,yylineno);
+    printf("Error type A at Line %d: Illegal octal number '%s'.\n", yylineno, yytext);
+    return INT;
+}
+{FLOAT}|{digit}*\.{digit}*[eE][\+\-]?{digit}+ {
     float val = strtof(yytext, NULL);
     yylval.node = malloc_node("FLOAT",FLOAT,&val,yylineno);
     return FLOAT;
@@ -54,6 +82,15 @@ IF if
     yylval.node = malloc_node( "TYPE", Type, s,yylineno);
     return Type;
     }    
+"//"[^\n]* {}
+"/*" {
+    char a = input(), b = input();
+    while(a != '*' || b != '/'){
+        a = b;
+        b = input();
+    }
+    //printf("COMMENT ");
+ }
 {SEMI} {
     yylval.node = malloc_node("SEMI",SEMI,NULL,yylineno);
     return SEMI;
