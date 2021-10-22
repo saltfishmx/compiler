@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include "syntax.tab.h"
 #include "tree.h"
+#include"symbol.h"
 extern int yyparse();
 extern void yyrestart(FILE*);
+extern Snode *symboltable;
 int error = 0;
 int main(int argc, char **argv)
 {
@@ -17,7 +19,8 @@ int main(int argc, char **argv)
     yyrestart(f);
     yyparse();
     if(!error){
-        preorder(root,0);
+        inithash(symboltable);
+        //preorder(root,0);
     }
     return 0;
 }
