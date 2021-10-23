@@ -60,12 +60,13 @@ void addtosymboltable(Snode *n)
     int pos = hash_pjw(n->name);
     linknodeadd(symboltable, pos, n);
 }
-int contain(char *name, int typewanted)
+Snode* contain(char *name, int typewanted)
 { //tip : a varient's name cant be the same with kind's name including a user-defined kind(such as structure)
+    //tyoe:varient,function,stru
     int pos = hash_pjw(name);
     if (&(symboltable[pos]) == NULL)
     {
-        return 0;
+        return NULL;
     }
     else
     {
@@ -75,13 +76,13 @@ int contain(char *name, int typewanted)
             n = n->next;
         }
         if(n==NULL){
-            return 0;
+            return NULL;
         }
         else{
             if(n->kind!=typewanted){ // for example .you want to check a varient named node but it turns out to be the name of some structure
-                return 0;
+                return NULL;
             }
-            return 1;
+            return n;
         }
     }
 }

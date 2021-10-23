@@ -1,6 +1,6 @@
 
-#include"semantic.h"
-
+#include "semantic.h"
+int anonymousnum = 0;
 extern Snode *symboltable;
 int equals(char *s1, char *s2)
 {
@@ -75,9 +75,37 @@ Type translatetype(Node *root)
     }
 }
 Type translateStructspecifier(Node *root)
-{//比如struct Complex {…}，那么之后可以直接使用该结构体来定义变量，例如struct Complex a, b;
+{ //比如struct Complex {…}，那么之后可以直接使用该结构体来定义变量，例如struct Complex a, b;
     if (matchproduction(root, 2, "STRUCT", "Tag"))
     {
+        Node *n = root->childlist[1]->childlist[0]; //the id node produced by Tag
+        Snode *sn = contain(n->name, stru);
+        if (sn == NULL)
+        {
+            printsemanticerror(17,n->lineno,"Undefined structure");
+        }
+        else{
+            return sn->content.type;
+        }
+    }   
+    else if(matchproduction(root,4,"STRUCT","LC","DefList","RC")){
+        anonymousnum++;
+        char *anoname[25];
+        sprintf(anoname,"%d_anno",anonymousnum);
+        Type st = (Type)malloc(sizeof(struct Type_));
+        st->kind = STRUCTURE;
+        st->u.structure.strname = anoname;
+        st->u.structure.fild = translateDefList(root->childlist[2]);
+    }    
+    else if(matchproduction(root,5,"STRUCT","OptTag","LC","DefList","RC")){
 
     }
+
+}
+FieldList translateDefList(Node *root){
+
+}
+void printsemanticerror(int errornumber, int line, char *msg)
+{
+    printf("Error type %d at Line %d: %s.\n", errornumber, line, msg);
 }

@@ -48,6 +48,6 @@ void inithash(Snode *table);
 void linknodeadd(Snode *table, int pos, Snode *a);
 Snode *createsnode(char *name, Type t, int skind);
 void addtosymboltable(Snode *n);
-int contain(char *name, int typewanted);
+Snode* contain(char *name, int typewanted);
 void symbolpreorder(Node *root);
 #endif
