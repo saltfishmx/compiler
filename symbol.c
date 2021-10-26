@@ -41,13 +41,14 @@ Snode *createsnode(char *name, Type t, int skind)
     switch (skind)
     {
     case varient:
+    case field:
     case stru:
         n->name = name;
         n->content.type = t;
         break;
     case function:
         n->name = name;
-        n->content.p.rettype = t;
+        (n->content).f->rettype = t;
         break;
     default:
         printf("error unknown snode type \n");

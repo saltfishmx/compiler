@@ -9,17 +9,17 @@ typedef struct Type_* Type;
 typedef struct Symboltablenode_ Snode;
 typedef struct FieldList_* FieldList;
 typedef struct Param_ Param;
-
-Snode *symboltable[symboltablesize]; 
+typedef struct funcinfo_ funcinfo;
 struct Type_{
     enum { BASIC, ARRAY, STRUCTURE } kind;  
+    int rvalue;
     union{
         // 基本类型
         enum{INT,FLOAT} basic; 
         // 数组类型信息包括元素类型与数组大小构成  
         struct { Type elem; int size; } array; 
         // 结构体类型信息是一个链表
-        struct{char *strname;FieldList fild}structure;
+        struct{char *strname;FieldList fild;}structure;
     }u;
 };
 
@@ -28,21 +28,25 @@ struct FieldList_{
     Type type;  // 域的类型
     FieldList tail;  // 下一个域
 };
-
+struct Param_{
+    Type type;
+    Param* tail;
+};
+struct funcinfo_{
+    Type rettype;
+    Param *p;
+    int paramnum;
+};
 struct Symboltablenode_{
-    enum{varient,function,stru} kind;//符号表节点，符号可以是变量或者函数 结构体的定义
+    enum{varient,function,stru,field} kind;//符号表节点，符号可以是变量或者函数 结构体的定义 or field
     char* name;
     union{
         Type type;
-        Param p; //func
+        funcinfo* f; //func
     }content;
     Snode *next;
 };
-struct Param_{
-    int num;
-    Type rettype;
-    Type *array;
-};
+Snode symboltable[symboltablesize]; 
 unsigned int hash_pjw(char* name);
 void inithash(Snode *table);
 void linknodeadd(Snode *table, int pos, Snode *a);
