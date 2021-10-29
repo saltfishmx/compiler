@@ -1,11 +1,10 @@
 #ifndef symbol
 #define symbol
-#define symboltablesize 16384
+#define symboltablesize 4096
 #include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
-#include"semantic.h"
-typedef struct Type_* Type;
+typedef struct Type_* Type1;
 typedef struct Symboltablenode_ Snode;
 typedef struct FieldList_* FieldList;
 typedef struct Param_ Param;
@@ -15,9 +14,9 @@ struct Type_{
     int rvalue;
     union{
         // 基本类型
-        enum{INT,FLOAT} basic; 
+        enum{INT1,FLOAT1} basic; 
         // 数组类型信息包括元素类型与数组大小构成  
-        struct { Type elem; int size; } array; 
+        struct { Type1 elem; int size; } array; 
         // 结构体类型信息是一个链表
         struct{char *strname;FieldList fild;}structure;
     }u;
@@ -25,15 +24,15 @@ struct Type_{
 
 struct FieldList_{
     char* name;  // 域的名字
-    Type type;  // 域的类型
+    Type1 type;  // 域的类型
     FieldList tail;  // 下一个域
 };
 struct Param_{
-    Type type;
+    Type1 type;
     Param* tail;
 };
 struct funcinfo_{
-    Type rettype;
+    Type1 rettype;
     Param *p;
     int paramnum;
 };
@@ -41,17 +40,16 @@ struct Symboltablenode_{
     enum{varient,function,stru,field} kind;//符号表节点，符号可以是变量或者函数 结构体的定义 or field
     char* name;
     union{
-        Type type;
+        Type1 type;
         funcinfo* f; //func
     }content;
     Snode *next;
 };
-Snode symboltable[symboltablesize]; 
+Snode *symboltable[symboltablesize]; 
 unsigned int hash_pjw(char* name);
-void inithash(Snode *table);
-void linknodeadd(Snode *table, int pos, Snode *a);
-Snode *createsnode(char *name, Type t, int skind);
+void inithash(Snode **table);
+void linknodeadd(Snode **table, int pos, Snode *a);
+Snode *createsnode(char *name, Type1 t, int skind);
 void addtosymboltable(Snode *n);
 Snode* contain(char *name, int typewanted);
-void symbolpreorder(Node *root);
 #endif

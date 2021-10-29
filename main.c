@@ -2,9 +2,10 @@
 #include "syntax.tab.h"
 #include "tree.h"
 #include"symbol.h"
+#include"semantic.h"
 extern int yyparse();
 extern void yyrestart(FILE*);
-extern Snode *symboltable;
+extern Snode *symboltable[];
 int error = 0;
 int main(int argc, char **argv)
 {
@@ -20,6 +21,7 @@ int main(int argc, char **argv)
     yyparse();
     if(!error){
         inithash(symboltable);
+        translateProgram(root);
         //preorder(root,0);
     }
     return 0;

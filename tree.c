@@ -10,6 +10,7 @@ Node* malloc_node(char *name,int type,void* val,int line){
     node->childnum = 0;
     node->type = type;
     node->lineno = line;
+
     for(int i=0;i<10;i++){
         node->childlist[i]=NULL;
     }
