@@ -19,6 +19,30 @@ void inithash(Snode **table)
     for(int i=0;i<symboltablesize;i++){
         table[i] = NULL;
     }
+    //lab3:在符号表中预先添加read和write这两个预定义的函数
+    Type1 t = (Type1)malloc(sizeof(struct Type_));
+    t->kind = BASIC;
+    t->u.basic = INT1;
+    t->rvalue = 1;
+    Snode *n = createsnode("read",t,function);
+    n->content.f->paramnum = 0;
+    n->content.f->p = NULL;
+    addtosymboltable(n);
+    Type1 t1 = (Type1)malloc(sizeof(struct Type_));
+    t1->kind = BASIC;
+    t1->u.basic = INT1;
+    t1->rvalue = 1;    
+    Snode *n1 =  createsnode("write",t1,function);
+    n1->content.f->paramnum = 1;
+    Type1 t2 = (Type1)malloc(sizeof(struct Type_));
+    t2->kind = BASIC;
+    t2->u.basic = INT1;
+    t2->rvalue = 1;        
+    Param *p = (Param*)(malloc)(sizeof(struct Param_));
+    p->type = t2;
+    p->tail = NULL;
+    n1->content.f->p = p;
+    addtosymboltable(n1);
 }
 void linknodeadd(Snode **table, int pos, Snode *a)
 { //add a snode to symboltable
