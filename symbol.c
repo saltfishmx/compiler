@@ -28,6 +28,7 @@ void inithash(Snode **table)
     n->content.f->paramnum = 0;
     n->content.f->p = NULL;
     addtosymboltable(n);
+    
     Type1 t1 = (Type1)malloc(sizeof(struct Type_));
     t1->kind = BASIC;
     t1->u.basic = INT1;

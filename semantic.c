@@ -4,9 +4,11 @@
 #include <string.h>
 #include "semantic.h"
 #include "symbol.h"
+#include "inter.h"
 #define debug 0
 int anonymousnum = 0;
 extern Snode *symboltable[];
+extern inode* ilist;
 int equals(char *s1, char *s2)
 {
     if (strcmp(s1, s2) == 0)
