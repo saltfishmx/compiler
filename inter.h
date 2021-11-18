@@ -4,16 +4,17 @@
 #include <stdlib.h>
 typedef struct Operand_ *Operand;
 typedef struct inode_ inode;
-typedef struct InterCode_ InterCode;
+typedef struct InterCode_ *InterCode;
 
 struct Operand_
 {
     enum
     {
-        VARIABLE,
-        CONSTANT,
-        ADDRESS,
-        LABLE
+        OVARIABLE,
+        OCONSTANT,
+        OADDRESS,
+        OLABLE,
+
     } kind;
     union
     {
@@ -25,10 +26,28 @@ struct InterCode_
 {
     enum
     {
-        ASSIGN,
-        ADD,
-        SUB,
-        MUL
+        IASSIGN,
+        ICALL,
+        IGETADDR,
+
+        IADD,
+        ISUB,
+        IMUL,
+        IDIV,
+
+        ILABLE,
+        IFUNCTION,
+        IGOTO,
+        IRETURN,
+        IARG,
+        IPARAM,
+        IREAD,
+        IWRITE,
+        
+        IDEC,
+        
+        IIFGOTO
+     
     } kind;
     union
     {
@@ -40,6 +59,19 @@ struct InterCode_
         {
             Operand result, op1, op2;
         } binop;
+        struct{
+            Operand op;
+        }single;
+        struct{
+            Operand op;
+            int size;
+        }dec;
+        struct{
+            Operand op1;
+            Operand relop;
+            Operand op2;
+            Operand dst;
+        }ifgoto;
     } u;
 };
 struct inode_{
@@ -47,7 +79,7 @@ struct inode_{
     inode *prev;
     inode *next;
 };
-extern inode* ilist = NULL;
-extern int labelnum = 0;
-extern int tempnum = 0;
+inode* ilist = NULL;
+int labelnum = 0;
+int tempnum = 0;
 #endif

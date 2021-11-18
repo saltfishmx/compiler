@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "semantic.h": "c",
-        "symbol.h": "c"
+        "symbol.h": "c",
+        "limits": "cpp"
     }
 }
