@@ -7,6 +7,7 @@
 extern int yyparse();
 extern void yyrestart(FILE*);
 extern Snode *symboltable[];
+
 int error = 0;
 int main(int argc, char **argv)
 {

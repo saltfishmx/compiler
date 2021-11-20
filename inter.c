@@ -1,9 +1,10 @@
 #include <stdarg.h>
+#include <string.h>
 #include "inter.h"
-
-extern inode* ilist;
-extern int labelnum;
-extern int tempnum;
+#define debug1  0
+inode* ilist = NULL;
+int labelnum = 0;
+int tempnum = 0;
 void addtoilist(inode* n){
     if(ilist == NULL){
         ilist = n;
@@ -17,26 +18,31 @@ void addtoilist(inode* n){
         ilist->prev = n;
     }
 }
+
 Operand newoperand(int kind,void *u){
     Operand p = (Operand)malloc(sizeof(struct Operand_));
     p->kind = kind;
     if(kind == OCONSTANT){
-        p->u.value = (int)u;
+        p->u.value = (int)(u);
     }
     else{
-        p->u.name = (char*)u;
+        p->u.name = (char*)(u);
+        //if(debug1)printf("%s!!!\n",p->u.name);
     }
 }
+
 Operand newlabel(){
-    char labelname[10];
+    char labelname[15]={0};
     sprintf(labelname,"label%d",labelnum++);
     Operand label = newoperand(OLABLE,labelname);
     return label;
 }
 Operand newtemp(){
-    char tempname[10];
-    sprintf(tempname,"label%d",tempnum++);
+    char *tempname;
+    sprintf(tempname,"temp%d",tempnum++);
     Operand temp = newoperand(OVARIABLE,tempname);
+    if(debug1)temp->u.name = "hello";
+    if(debug1)printf("%s!!~~~~\n",temp->u.name);
     return temp;
 }
 
@@ -127,7 +133,8 @@ void genintercode(int kind,...){
         ic->u.dec.op = op;
         ic->u.dec.size = size;
         addtoilist(in);
-        va_end(valist);       
+        va_end(valist);     
+        break;  
     case IIFGOTO:
         va_start(valist,kind);
         op1 = va_arg(valist,Operand);
@@ -140,6 +147,7 @@ void genintercode(int kind,...){
         ic->u.ifgoto.dst = dst;
         addtoilist(in);
         va_end(valist);
+        break;
     default:
         printf("something wrong happened in genintercode: unknown kind\n");
         break;
@@ -152,6 +160,7 @@ void printop(FILE *f,Operand op){
     }
     else{
         fprintf(f,"%s",op->u.name);
+        if(debug1)printf("%s\n",op->u.name);
     }
 }
 void printic(FILE *f,InterCode ic){
@@ -161,28 +170,28 @@ void printic(FILE *f,InterCode ic){
         printop(f,ic->u.binop.result);
         fprintf(f," := ");
         printop(f,ic->u.binop.op1);
-        fprintop(f," + ");
+        fprintf(f," + ");
         printop(f,ic->u.binop.op2);
         break;
     case ISUB:
         printop(f,ic->u.binop.result);
         fprintf(f," := ");
         printop(f,ic->u.binop.op1);
-        fprintop(f," - ");
+        fprintf(f," - ");
         printop(f,ic->u.binop.op2);
         break;
     case IMUL:
         printop(f,ic->u.binop.result);
         fprintf(f," := ");
         printop(f,ic->u.binop.op1);
-        fprintop(f," * ");
+        fprintf(f," * ");
         printop(f,ic->u.binop.op2);
         break;
     case IDIV:
         printop(f,ic->u.binop.result);
         fprintf(f," := ");
         printop(f,ic->u.binop.op1);
-        fprintop(f," / ");
+        fprintf(f," / ");
         printop(f,ic->u.binop.op2);
         break;  
     case IASSIGN:
@@ -229,6 +238,10 @@ void printic(FILE *f,InterCode ic){
         printop(f,ic->u.single.op);
         break;
     case IGOTO:
+        if(debug1){
+            printf("%s\n",ic->u.single.op->u.name);
+            //strcpy(ic->u.single.op->u.name,"hello");
+        }
         fprintf(f,"GOTO ");
         printop(f,ic->u.single.op);
         break;                    
@@ -245,8 +258,7 @@ void printic(FILE *f,InterCode ic){
     case IDEC:
         fprintf(f,"DEC ");
         printop(f,ic->u.dec.op);
-        fprintf(f," ");
-        printop(f,ic->u.dec.size);
+        fprintf(f," %d",ic->u.dec.size);
         break;
     case IIFGOTO:
         fprintf(f,"IF ");
@@ -261,10 +273,11 @@ void printic(FILE *f,InterCode ic){
     default:
         break;
     }
+    fprintf(f,"\n");
 }
 void printintercode(FILE *f,inode *p){
     inode *head = p;
-    InterCode* ic;
+    InterCode ic;
     while(p->next!=head){ // we need one more time after while loop
         ic = p->code;
         printic(f,ic);

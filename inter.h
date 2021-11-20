@@ -5,6 +5,9 @@
 typedef struct Operand_ *Operand;
 typedef struct inode_ inode;
 typedef struct InterCode_ *InterCode;
+extern inode* ilist;
+extern int labelnum;
+extern int tempnum;
 
 struct Operand_
 {
@@ -35,7 +38,7 @@ struct InterCode_
         IMUL,
         IDIV,
 
-        ILABLE,
+        ILABEL,
         IFUNCTION,
         IGOTO,
         IRETURN,
@@ -79,7 +82,14 @@ struct inode_{
     inode *prev;
     inode *next;
 };
-inode* ilist = NULL;
-int labelnum = 0;
-int tempnum = 0;
+
+void addtoilist(inode* n);
+Operand newoperand(int kind,void *u);
+//Operand newoperand(int kind,...);
+Operand newlabel();
+Operand newtemp();
+void genintercode(int kind,...);
+void printop(FILE *f,Operand op);
+void printic(FILE *f,InterCode ic);
+void printintercode(FILE *f,inode *p);
 #endif

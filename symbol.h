@@ -45,7 +45,8 @@ struct Symboltablenode_{
     }content;
     Snode *next;
 };
-Snode *symboltable[symboltablesize]; 
+extern Snode *symboltable[];
+
 unsigned int hash_pjw(char* name);
 void inithash(Snode **table);
 void linknodeadd(Snode **table, int pos, Snode *a);

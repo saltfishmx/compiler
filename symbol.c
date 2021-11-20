@@ -1,7 +1,7 @@
 #include<string.h>
 #include "semantic.h"
 #include "symbol.h"
-extern Snode *symboltable[];
+Snode *symboltable[symboltablesize]; 
 unsigned int hash_pjw(char *name)
 {
     unsigned int val = 0, i;
