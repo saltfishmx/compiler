@@ -4,7 +4,8 @@
 #include <string.h>
 #include "semantic.h"
 #include "symbol.h"
-
+#include "inter.h"
+#include"syntax.tab.h"
 #define debug 0
 int anonymousnum = 0;
 extern Snode *symboltable[];
@@ -666,7 +667,7 @@ Param *translateArgs(Node *root)
         return arg;
     }
 }
-Type1 translateExp(Node *root)
+Type1 translateExp(Node *root,Operand place)
 {
     if(root==NULL){
         printf("exp root is null?\n");
@@ -678,8 +679,11 @@ Type1 translateExp(Node *root)
 
     if (matchproduction(root, 3, "Exp", "ASSIGNOP", "Exp"))
     {
-        Type1 le = translateExp(root->childlist[0]);
-        Type1 ri = translateExp(root->childlist[2]);
+        //LAB3
+        Type1 le = translateExp(root->childlist[0],place);
+        Operand t1 = newtemp();
+        Type1 ri = translateExp(root->childlist[2],t1);//code1 inside
+
         if (le != NULL && le->rvalue)
         {
             printsemanticerror(6, root->childlist[0]->lineno, "The left-hand side of an assignment must be a variable");
@@ -688,6 +692,12 @@ Type1 translateExp(Node *root)
         {
             printsemanticerror(5, root->childlist[0]->lineno, "Type mismatched for assignment");
         }
+
+        //lab3
+        Operand vari = newoperand(OVARIABLE,root->childlist[0]->val.s);
+        genintercode(IASSIGN,vari,t1);
+        genintercode(IASSIGN,place,vari);
+        //
 
         if (le != NULL)
         {
@@ -716,15 +726,37 @@ Type1 translateExp(Node *root)
     }
     else if (matchproduction(root, 3, "Exp", "PLUS", "Exp") || matchproduction(root, 3, "Exp", "MINUS", "Exp") || matchproduction(root, 3, "Exp", "STAR", "Exp") || matchproduction(root, 3, "Exp", "DIV", "Exp"))
     {
-  
-        Type1 le = translateExp(root->childlist[0]);
-        Type1 ri = translateExp(root->childlist[2]);
+        //lab3
+        Operand t1 = newtemp();
+        Operand t2 = newtemp();
+
+        Type1 le = translateExp(root->childlist[0],t1);
+        Type1 ri = translateExp(root->childlist[2],t2);
         
         if ((!(le != NULL && le->kind == BASIC && le->u.basic == INT1 && ri != NULL && ri->kind == BASIC && ri->u.basic == INT1)) && (!(le != NULL && le->kind == BASIC && le->u.basic == FLOAT1 && ri != NULL && ri->kind == BASIC && ri->u.basic == FLOAT1)))
         {
             printsemanticerror(7, root->childlist[0]->lineno, "Type mismatched for operands.");
         }
-       
+        //LAB3
+        switch (root->childlist[1]->type)
+        {
+        case PLUS:
+            genintercode(IADD,place,t1,t2);
+            break;
+        case MINUS:
+            genintercode(ISUB,place,t1,t2);
+            break;
+        case STAR:
+            genintercode(IMUL,place,t1,t2);
+            break;
+        case DIV:
+            genintercode(IDIV,place,t1,t2);
+            break;                                
+        default:
+            printf("translate exp error!\n");
+            break;
+        }
+
         if (le != NULL)
         {
             return le;
@@ -738,11 +770,14 @@ Type1 translateExp(Node *root)
     }
     else if (matchproduction(root, 2, "MINUS", "Exp"))
     {
-        Type1 t = translateExp(root->childlist[1]);
+        Operand t1 = newtemp();
+        Type1 t = translateExp(root->childlist[1],t1);
         if (t != NULL && t->kind != BASIC)
         {
             printsemanticerror(7, root->childlist[0]->lineno, "Type mismatched for operands.");
         }
+        Operand CONS0 = newoperand(OCONSTANT,0);
+        genintercode(ISUB,place,CONS0,t1);
         return t;
     }
     else if (matchproduction(root, 2, "NOT", "Exp"))
@@ -856,6 +891,10 @@ Type1 translateExp(Node *root)
         Snode *sn = contain(id->val.s, varient);
         if (sn != NULL)
         {
+            //lab3:
+            Operand vari = newoperand(OVARIABLE,id->val.s);
+            genintercode(IASSIGN,place,vari);
+            //
             return sn->content.type;
         }
         else
@@ -870,9 +909,15 @@ Type1 translateExp(Node *root)
         t->kind = BASIC;
         t->rvalue = 1;
         t->u.basic = INT1;
+
+        //lab3:
+        int value = root->childlist[0]->val.i;
+        Operand v = newoperand(OCONSTANT,value);
+        genintercode(IASSIGN,place,v);
+        //
         return t;
     }
-    else if (matchproduction(root, 1, "FLOAT"))
+    else if (matchproduction(root, 1, "FLOAT"))//lab3 not consider this
     {
         Type1 t = (Type1)malloc(sizeof(struct Type_));
         t->kind = BASIC;

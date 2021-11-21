@@ -2,6 +2,7 @@
 #define semantic
 #include"symbol.h"
 #include "tree.h"
+#include "inter.h"
 int equals(char *s1, char *s2);
 int equalType(Type1 t1, Type1 t2);
 int matchproduction(Node *root, int num, ...);
@@ -24,7 +25,7 @@ FieldList translateDecList(Node *root,int skind ,Type1 type);
 Snode *translateDec(Node *root, int skind, Type1 type);
 Snode *translateVarDec(Node *root, int skind, Type1 type);
 Param *translateArgs(Node *root);
-Type1 translateExp(Node *root);
+Type1 translateExp(Node *root,Operand place);
 int checkargs(Param *p1, Param *p2, int num);
 void printsemanticerror(int errornumber, int line, char *msg);
 #endif
