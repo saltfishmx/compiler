@@ -1,5 +1,0 @@
-gcc -g -c -o inter.o inter.c
-gcc -c -g -o printtest.o printtest.c
-gcc -o printtest ./printtest.o inter.o
-./printtest testfile.ir
-

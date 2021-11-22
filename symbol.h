@@ -3,6 +3,7 @@
 #define symboltablesize 4096
 #include <stdio.h>
 #include <stdlib.h>
+#include"inter.h"
 #include "tree.h"
 typedef struct Type_* Type1;
 typedef struct Symboltablenode_ Snode;
@@ -29,6 +30,7 @@ struct FieldList_{
 };
 struct Param_{
     Type1 type;
+    Operand op;//lab3
     Param* tail;
 };
 struct funcinfo_{

@@ -20,7 +20,7 @@ Node* malloc_node(char *name,int type,void* val,int line){
     else if(type == FLOAT){
         node->val.f = *(float*)val;
     }
-    else if(type==ID||type==Type){
+    else if(type==ID||type==Type || type == RELOP){
         node->val.s = malloc(strlen(val)+1);
         strcpy(node->val.s,val);
     }

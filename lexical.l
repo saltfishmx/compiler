@@ -104,7 +104,9 @@ IF if
     return ASSIGNOP;
     }
 {RELOP} {
-    yylval.node = malloc_node("RELOP",RELOP,NULL,yylineno);    
+    char *s = malloc(strlen(yytext) + 1);
+    strcpy(s, yytext);    
+    yylval.node = malloc_node("RELOP",RELOP,s,yylineno);    
     return RELOP;
     }
 {PLUS} {

@@ -88,86 +88,105 @@ Grammar
 
 Terminals, with rules where they appear
 
-$end (0) 0
-error (256) 18 21 26 35
-INT (258) 17 59
-FLOAT (259) 60
-ID (260) 13 15 16 19 20 54 55 57 58
-Type (261) 9
-ASSIGNOP (262) 42 43
-OR (263) 45
-AND (264) 44
-RELOP (265) 46
-PLUS (266) 47
-MINUS (267) 48 52
-STAR (268) 49
-DIV (269) 50
-NOT (270) 53
-LP (271) 19 20 32 33 34 51 54 55
-RP (272) 19 20 21 32 33 34 51 54 55
-LB (273) 17 56
-RB (274) 17 18 56
-DOT (275) 57
-SEMI (276) 4 5 29 31 35 38
-COMMA (277) 8 22 40 61
-STRUCT (278) 11 12
-LC (279) 11 25
-RC (280) 11 25 26
-RETURN (281) 31
-IF (282) 32 33
-WHILE (283) 34
-ELSE (284) 33
-LOWER_THAN_ELSE (285)
+    $end (0) 0
+    error (256) 18 21 26 35
+    INT <node> (258) 17 59
+    FLOAT <node> (259) 60
+    ID <node> (260) 13 15 16 19 20 54 55 57 58
+    Type <node> (261) 9
+    ASSIGNOP <node> (262) 42 43
+    OR <node> (263) 45
+    AND <node> (264) 44
+    RELOP <node> (265) 46
+    PLUS <node> (266) 47
+    MINUS <node> (267) 48 52
+    STAR <node> (268) 49
+    DIV <node> (269) 50
+    NOT <node> (270) 53
+    LP <node> (271) 19 20 32 33 34 51 54 55
+    RP <node> (272) 19 20 21 32 33 34 51 54 55
+    LB <node> (273) 17 56
+    RB <node> (274) 17 18 56
+    DOT <node> (275) 57
+    SEMI <node> (276) 4 5 29 31 35 38
+    COMMA <node> (277) 8 22 40 61
+    STRUCT <node> (278) 11 12
+    LC <node> (279) 11 25
+    RC <node> (280) 11 25 26
+    RETURN <node> (281) 31
+    IF <node> (282) 32 33
+    WHILE <node> (283) 34
+    ELSE <node> (284) 33
+    LOWER_THAN_ELSE (285)
 
 
 Nonterminals, with rules where they appear
 
-$accept (31)
-    on left: 0
-Program (32)
-    on left: 1, on right: 0
-ExtDefList (33)
-    on left: 2 3, on right: 1 2
-ExtDef (34)
-    on left: 4 5 6, on right: 2
-ExtDecList (35)
-    on left: 7 8, on right: 4 8
-Specifier (36)
-    on left: 9 10, on right: 4 5 6 24 38
-StructSpecifier (37)
-    on left: 11 12, on right: 10
-OptTag (38)
-    on left: 13 14, on right: 11
-Tag (39)
-    on left: 15, on right: 12
-VarDec (40)
-    on left: 16 17 18, on right: 7 8 17 24 41 42
-FunDec (41)
-    on left: 19 20 21, on right: 6
-VarList (42)
-    on left: 22 23, on right: 19 22
-ParamDec (43)
-    on left: 24, on right: 22 23
-CompSt (44)
-    on left: 25 26, on right: 6 30
-StmtList (45)
-    on left: 27 28, on right: 25 27
-Stmt (46)
-    on left: 29 30 31 32 33 34 35, on right: 27 32 33 34
-DefList (47)
-    on left: 36 37, on right: 11 25 36
-Def (48)
-    on left: 38, on right: 36
-DecList (49)
-    on left: 39 40, on right: 38 40
-Dec (50)
-    on left: 41 42, on right: 39 40
-Exp (51)
-    on left: 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60,
-    on right: 29 31 32 33 34 42 43 44 45 46 47 48 49 50 51 52 53 56
-    57 61 62
-Args (52)
-    on left: 61 62, on right: 54 61
+    $accept (31)
+        on left: 0
+    Program <node> (32)
+        on left: 1
+        on right: 0
+    ExtDefList <node> (33)
+        on left: 2 3
+        on right: 1 2
+    ExtDef <node> (34)
+        on left: 4 5 6
+        on right: 2
+    ExtDecList <node> (35)
+        on left: 7 8
+        on right: 4 8
+    Specifier <node> (36)
+        on left: 9 10
+        on right: 4 5 6 24 38
+    StructSpecifier <node> (37)
+        on left: 11 12
+        on right: 10
+    OptTag <node> (38)
+        on left: 13 14
+        on right: 11
+    Tag <node> (39)
+        on left: 15
+        on right: 12
+    VarDec <node> (40)
+        on left: 16 17 18
+        on right: 7 8 17 24 41 42
+    FunDec <node> (41)
+        on left: 19 20 21
+        on right: 6
+    VarList <node> (42)
+        on left: 22 23
+        on right: 19 22
+    ParamDec <node> (43)
+        on left: 24
+        on right: 22 23
+    CompSt <node> (44)
+        on left: 25 26
+        on right: 6 30
+    StmtList <node> (45)
+        on left: 27 28
+        on right: 25 27
+    Stmt <node> (46)
+        on left: 29 30 31 32 33 34 35
+        on right: 27 32 33 34
+    DefList <node> (47)
+        on left: 36 37
+        on right: 11 25 36
+    Def <node> (48)
+        on left: 38
+        on right: 36
+    DecList <node> (49)
+        on left: 39 40
+        on right: 38 40
+    Dec <node> (50)
+        on left: 41 42
+        on right: 39 40
+    Exp <node> (51)
+        on left: 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60
+        on right: 29 31 32 33 34 42 43 44 45 46 47 48 49 50 51 52 53 56 57 61 62
+    Args <node> (52)
+        on left: 61 62
+        on right: 54 61
 
 
 State 0

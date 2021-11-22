@@ -34,13 +34,19 @@ Operand newoperand(int kind,void *u){
 Operand newlabel(){
     char labelname[15]={0};
     sprintf(labelname,"label%d",labelnum++);
-    Operand label = newoperand(OLABLE,labelname);
+    int len = strlen(labelname);
+    char *name = (char*)malloc(sizeof(char)*len);
+    strncpy(name,labelname,len);
+    Operand label = newoperand(OLABLE,name);
     return label;
 }
 Operand newtemp(){
-    char *tempname;
+    char tempname[15]={0};
     sprintf(tempname,"temp%d",tempnum++);
-    Operand temp = newoperand(OVARIABLE,tempname);
+    int len = strlen(tempname);
+    char *name = (char*)malloc(sizeof(char)*len);
+    strncpy(name,tempname,len);    
+    Operand temp = newoperand(OVARIABLE,name);
     if(debug1)temp->u.name = "hello";
     if(debug1)printf("%s!!~~~~\n",temp->u.name);
     return temp;
@@ -83,6 +89,9 @@ void genintercode(int kind,...){
         va_start(valist,kind);
         Operand op1 = va_arg(valist,Operand);
         Operand op2 = va_arg(valist,Operand);
+        if(op2==NULL){
+            printf("error,op2 is null");
+        }
         if(op1->kind == OADDRESS && op2->kind ==OADDRESS){  // case like *x = *y ,should break up into two intercodes
             Operand temp = newtemp();
             genintercode(IASSIGN,temp,op2);

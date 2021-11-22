@@ -25,6 +25,7 @@ void inithash(Snode **table)
     t->u.basic = INT1;
     t->rvalue = 1;
     Snode *n = createsnode("read",t,function);
+
     n->content.f->paramnum = 0;
     n->content.f->p = NULL;
     addtosymboltable(n);
@@ -34,6 +35,7 @@ void inithash(Snode **table)
     t1->u.basic = INT1;
     t1->rvalue = 1;    
     Snode *n1 =  createsnode("write",t1,function);
+
     n1->content.f->paramnum = 1;
     Type1 t2 = (Type1)malloc(sizeof(struct Type_));
     t2->kind = BASIC;
@@ -78,6 +80,7 @@ Snode *createsnode(char *name, Type1 t, int skind)
         break;
     case function:
         n->name = name;
+        n->content.f = (funcinfo *)malloc(sizeof(struct funcinfo_));        
         (n->content).f->rettype = t;
         break;
     default:

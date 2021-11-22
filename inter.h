@@ -17,6 +17,8 @@ struct Operand_
         OCONSTANT,
         OADDRESS,
         OLABLE,
+        ORELOP,
+        OFUNCTION
 
     } kind;
     union
