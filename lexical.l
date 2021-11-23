@@ -38,6 +38,7 @@ LC "{"
 RC "}"
 STRUCT struct
 RETURN return
+WHILE while
 IF if
 %%
 {INT} {
@@ -177,6 +178,10 @@ IF if
     yylval.node = malloc_node("IF",IF,NULL,yylineno);    
     return IF;
     }
+{WHILE} {
+    yylval.node = malloc_node("WHILE",WHILE,NULL,yylineno);    
+    return WHILE;
+    }    
 "else" {
     yylval.node = malloc_node("ELSE",ELSE,NULL,yylineno);    
     return ELSE;

@@ -512,6 +512,8 @@ Param *translateParamDec(Node *root)
             return NULL;
         }
         Operand par = newoperand(OVARIABLE,sn->name);
+        //printf("par name %s\n",par->u.name);
+        //sn->name is temp??
         genintercode(IPARAM,par);
         Param *p = (Param *)malloc(sizeof(Param));
         p->type = sn->content.type;
@@ -713,6 +715,9 @@ Snode *translateDec(Node *root, int skind, Type1 type)
             {
                 printsemanticerror(5, root->childlist[0]->lineno, "Type mismatched for assignment");
             }
+
+            //printf("v->u.name = %s    place->u.name =%s \n" ,v->u.name,place->u.name);
+            
             genintercode(IASSIGN, v, place);
         }
         else if (skind == field)
@@ -901,6 +906,8 @@ Type1 translateExp(Node *root, Operand place)
         Type1 ri = translateExp(root->childlist[2], t1); //code1 inside
         Operand t2 = newtemp();
         Type1 le = translateExp(root->childlist[0], t2);
+
+        //printf("t2:%s\n",t2->u.name);
         if (le != NULL && le->rvalue)
         {
             printsemanticerror(6, root->childlist[0]->lineno, "The left-hand side of an assignment must be a variable");
@@ -1146,8 +1153,13 @@ Type1 translateExp(Node *root, Operand place)
         {
             //lab3:
             Operand vari = newoperand(OVARIABLE, id->val.s);
-            genintercode(IASSIGN, place, vari);
-            //
+            //printf("%s!!!\n",vari->u.name);
+            tempnum--; // no longer need the original place
+            //place = vari;  //not work
+            //printf("%s!!!\n",place->u.name);
+            //genintercode(IASSIGN, place, vari);
+            free(place->u.name);
+            place->u.name = news(vari->u.name);
             return sn->content.type;
         }
         else

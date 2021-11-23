@@ -18,7 +18,12 @@ void addtoilist(inode* n){
         ilist->prev = n;
     }
 }
-
+char *news(char *s){
+    int len =strlen(s);
+    char *res = (char*)malloc(sizeof(char)*len);
+    strncpy(res,s,len);
+    return res;
+}
 Operand newoperand(int kind,void *u){
     Operand p = (Operand)malloc(sizeof(struct Operand_));
     p->kind = kind;
@@ -26,7 +31,7 @@ Operand newoperand(int kind,void *u){
         p->u.value = (int)(u);
     }
     else{
-        p->u.name = (char*)(u);
+        p->u.name = ((char*)(u));
         //if(debug1)printf("%s!!!\n",p->u.name);
     }
 }
@@ -34,9 +39,7 @@ Operand newoperand(int kind,void *u){
 Operand newlabel(){
     char labelname[15]={0};
     sprintf(labelname,"label%d",labelnum++);
-    int len = strlen(labelname);
-    char *name = (char*)malloc(sizeof(char)*len);
-    strncpy(name,labelname,len);
+    char *name = news(labelname);
     Operand label = newoperand(OLABLE,name);
     return label;
 }
@@ -44,11 +47,12 @@ Operand newtemp(){
     char tempname[15]={0};
     sprintf(tempname,"temp%d",tempnum++);
     int len = strlen(tempname);
-    char *name = (char*)malloc(sizeof(char)*len);
-    strncpy(name,tempname,len);    
+    char *name = news(tempname);
     Operand temp = newoperand(OVARIABLE,name);
+    
     if(debug1)temp->u.name = "hello";
     if(debug1)printf("%s!!~~~~\n",temp->u.name);
+    
     return temp;
 }
 
@@ -113,10 +117,11 @@ void genintercode(int kind,...){
     case ISUB:
     case IMUL:
     case IDIV:
-        va_start(valist,kind);          
+        va_start(valist,kind);      
+        result = va_arg(valist,Operand);     
         op1 = va_arg(valist,Operand);
         op2 = va_arg(valist,Operand);
-        result = va_arg(valist,Operand);     
+            
         if(op2->kind == OADDRESS){
             Operand temp2 = newtemp();
             genintercode(IASSIGN,temp2,op2);
@@ -214,7 +219,7 @@ void printic(FILE *f,InterCode ic){
             fprintf(f,"*");
         }
         printop(f,ic->u.assign.left);
-        fprintf(f," = ");
+        fprintf(f," := ");
         if(ic->u.assign.right->kind == OADDRESS){ //x = *y
             fprintf(f,"*");
         }
@@ -222,13 +227,13 @@ void printic(FILE *f,InterCode ic){
         break;                          
     case IGETADDR:
         printop(f,ic->u.assign.left);
-        fprintf(f," = ");
+        fprintf(f," := ");
         fprintf(f,"&");
         printop(f,ic->u.assign.right);
         break; 
     case ICALL:
         printop(f,ic->u.assign.left);
-        fprintf(f," = ");
+        fprintf(f," := ");
         fprintf(f," CALL ");
         printop(f,ic->u.assign.right);  
         break; 
@@ -239,6 +244,7 @@ void printic(FILE *f,InterCode ic){
     case IRETURN:
         fprintf(f,"RETURN ");
         printop(f,ic->u.single.op);
+
         break; 
     case IPARAM:
         fprintf(f,"PARAM ");
@@ -266,6 +272,7 @@ void printic(FILE *f,InterCode ic){
         fprintf(f," :");
         break;  
     case IFUNCTION:
+        fprintf(f,"\n");    
         fprintf(f,"FUNCTION ");
         printop(f,ic->u.single.op);
         fprintf(f," :");
