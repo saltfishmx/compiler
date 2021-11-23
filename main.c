@@ -3,11 +3,11 @@
 #include "tree.h"
 #include"symbol.h"
 #include"semantic.h"
-
+#include "inter.h"
 extern int yyparse();
 extern void yyrestart(FILE*);
 extern Snode *symboltable[];
-
+extern inode* ilist;
 int error = 0;
 int main(int argc, char **argv)
 {
@@ -30,6 +30,7 @@ int main(int argc, char **argv)
     if(!error){
         inithash(symboltable);
         translateProgram(root);
+        printintercode(fout,ilist);
         //preorder(root,0);
     }
     return 0;

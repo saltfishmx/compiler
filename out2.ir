@@ -1,0 +1,41 @@
+temp0 = n
+temp1 = #1
+IF temp0 == temp1 GOTO label0
+GOTO label1
+LABEL label0 :
+temp2 = n
+RETURN temp2
+GOTO label2
+LABEL label1 :
+temp4 = n
+temp7 = n
+temp8 = #1
+temp8 := temp6 - temp7
+ARG temp6
+temp5 =  CALL fact
+temp5 := temp3 * temp4
+RETURN temp3
+LABEL label2 :
+READ temp9
+temp10 = m
+temp10 = temp9
+temp11 = m
+temp12 = #1
+IF temp11 > temp12 GOTO label3
+GOTO label4
+LABEL label3 :
+temp14 = m
+ARG temp14
+temp13 =  CALL fact
+temp15 = result
+temp15 = temp13
+GOTO label5
+LABEL label4 :
+temp16 = #1
+temp17 = result
+temp17 = temp16
+LABEL label5 :
+temp18 = result
+WRITE temp18
+temp19 = #0
+RETURN temp19

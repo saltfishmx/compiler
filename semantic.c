@@ -395,6 +395,8 @@ Snode *translateFunDec(Node *root, Type1 rettype)
             sn->kind = function;
             sn->name = id->val.s;
             sn->next = NULL;
+            Operand func = newoperand(OFUNCTION,sn->name);
+            genintercode(IFUNCTION,func);
             int num = 0;
             int *p = &num;
             sn->content.f = (funcinfo *)malloc(sizeof(struct funcinfo_));
@@ -423,6 +425,8 @@ Snode *translateFunDec(Node *root, Type1 rettype)
             sn->name = id->val.s;
 
             sn->next = NULL;
+            Operand func = newoperand(OFUNCTION,sn->name);
+            genintercode(IFUNCTION,func);            
             int num = 0;
 
             sn->content.f = (funcinfo *)malloc(sizeof(struct funcinfo_));
@@ -507,6 +511,8 @@ Param *translateParamDec(Node *root)
             printf("error happend in extdef\n");
             return NULL;
         }
+        Operand par = newoperand(OVARIABLE,sn->name);
+        genintercode(IPARAM,par);
         Param *p = (Param *)malloc(sizeof(Param));
         p->type = sn->content.type;
         p->tail = NULL;
@@ -701,7 +707,7 @@ Snode *translateDec(Node *root, int skind, Type1 type)
         Snode *sn = translateVarDec(root->childlist[0], skind, type, v);
         if (skind == varient)
         {
-            Operand place = NULL;
+            Operand place = newtemp();
             Type1 t = translateExp(root->childlist[2], place);
             if (!equalType(type, t))
             {
@@ -893,8 +899,8 @@ Type1 translateExp(Node *root, Operand place)
         
         Operand t1 = newtemp();
         Type1 ri = translateExp(root->childlist[2], t1); //code1 inside
-        Operand vari = newoperand(OVARIABLE, root->childlist[0]->childlist[0]->val.s);
-        Type1 le = translateExp(root->childlist[0], vari);
+        Operand t2 = newtemp();
+        Type1 le = translateExp(root->childlist[0], t2);
         if (le != NULL && le->rvalue)
         {
             printsemanticerror(6, root->childlist[0]->lineno, "The left-hand side of an assignment must be a variable");
@@ -906,8 +912,8 @@ Type1 translateExp(Node *root, Operand place)
 
         //lab3
         
-        genintercode(IASSIGN, vari, t1);
-        //genintercode(IASSIGN, place, vari);       place is null heres
+        genintercode(IASSIGN, t2, t1);
+        if(place!=NULL)genintercode(IASSIGN, place, t2);
         //
 
         if (le != NULL)
@@ -1013,8 +1019,8 @@ Type1 translateExp(Node *root, Operand place)
             if (strcmp(id->val.s, "write") == 0)
             {
                 genintercode(IWRITE, p->op);
-                Operand CONST0 = newoperand(OCONSTANT, 0);
-                genintercode(IASSIGN, place, CONST0);
+                //Operand CONST0 = newoperand(OCONSTANT, 0);       ???dont understand this in lab notes
+                //genintercode(IASSIGN, place, CONST0);
             }
             else
             {

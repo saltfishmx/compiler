@@ -92,11 +92,17 @@ void genintercode(int kind,...){
         if(op2==NULL){
             printf("error,op2 is null");
         }
+        if(op1==NULL){
+            printf("error,op1 is null\n kind:%d",kind);
+
+        }    
+        /*    
         if(op1->kind == OADDRESS && op2->kind ==OADDRESS){  // case like *x = *y ,should break up into two intercodes
             Operand temp = newtemp();
             genintercode(IASSIGN,temp,op2);
             op2 = temp; //temp take place of op2 then
         }
+        */
         ic->u.assign.left = op1;
         ic->u.assign.right = op2;
         va_end(valist);
