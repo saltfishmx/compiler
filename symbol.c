@@ -69,6 +69,7 @@ Snode *createsnode(char *name, Type1 t, int skind)
 
     Snode *n = malloc(sizeof(Snode));
     n->next = NULL;
+    n->specialasparam = 0;
     n->kind = skind;
     switch (skind)
     {

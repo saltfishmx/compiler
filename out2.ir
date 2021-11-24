@@ -1,36 +1,31 @@
 
 FUNCTION fact :
 PARAM n
-temp1 := #1
-IF n == temp1 GOTO label0
+IF n == #1 GOTO label0
 GOTO label1
 LABEL label0 :
 RETURN n
 GOTO label2
 LABEL label1 :
-temp5 := #1
-temp3 := n - temp5
-ARG temp3
-temp3 :=  CALL fact
-temp1 := n * temp3
-RETURN temp1
+temp2 := n - #1
+ARG temp2
+temp1 :=  CALL fact
+temp0 := n * temp1
+RETURN temp0
 LABEL label2 :
 
 FUNCTION main :
-READ temp5
-m := temp5
-temp7 := #1
-IF m > temp7 GOTO label3
+READ temp4
+m := temp4
+IF m > #1 GOTO label3
 GOTO label4
 LABEL label3 :
 ARG m
-temp7 :=  CALL fact
-result := temp7
+temp5 :=  CALL fact
+result := temp5
 GOTO label5
 LABEL label4 :
-temp8 := #1
-result := temp8
+result := #1
 LABEL label5 :
 WRITE result
-temp9 := #0
-RETURN temp9
+RETURN #0

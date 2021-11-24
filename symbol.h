@@ -45,6 +45,7 @@ struct Symboltablenode_{
         Type1 type;
         funcinfo* f; //func
     }content;
+    int specialasparam; //stru or array as param    
     Snode *next;
 };
 extern Snode *symboltable[];

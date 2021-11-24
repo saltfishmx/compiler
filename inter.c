@@ -27,6 +27,7 @@ char *news(char *s){
 Operand newoperand(int kind,void *u){
     Operand p = (Operand)malloc(sizeof(struct Operand_));
     p->kind = kind;
+    p->specialasparam = 0;
     if(kind == OCONSTANT){
         p->u.value = (int)(u);
     }
@@ -46,12 +47,10 @@ Operand newlabel(){
 Operand newtemp(){
     char tempname[15]={0};
     sprintf(tempname,"temp%d",tempnum++);
-    int len = strlen(tempname);
+
     char *name = news(tempname);
     Operand temp = newoperand(OVARIABLE,name);
     
-    if(debug1)temp->u.name = "hello";
-    if(debug1)printf("%s!!~~~~\n",temp->u.name);
     
     return temp;
 }

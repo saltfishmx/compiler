@@ -1,27 +1,21 @@
+
 FUNCTION main :
 READ temp0
 n := temp0
-temp2 := #0
-IF n > temp2 GOTO label0
+IF n > #0 GOTO label0
 GOTO label1
 LABEL label0 :
-temp2 := #1
-WRITE temp2
+WRITE #1
 GOTO label2
 LABEL label1 :
-temp4 := #0
-IF n < temp4 GOTO label3
+IF n < #0 GOTO label3
 GOTO label4
 LABEL label3 :
-temp5 := #1
-temp4 := #0 - temp5
-WRITE temp4
+temp2 := #-1
+WRITE temp2
 GOTO label5
 LABEL label4 :
-temp6 := #0
-WRITE temp6
+WRITE #0
 LABEL label5 :
 LABEL label2 :
-temp7 := #0
-RETURN temp7
-
+RETURN #0

@@ -23,7 +23,7 @@ FieldList translateDefList(Node *root,int skind);
 FieldList translateDef(Node *root,int skind);
 FieldList translateDecList(Node *root,int skind ,Type1 type);
 Snode *translateDec(Node *root, int skind, Type1 type);
-Snode *translateVarDec(Node *root, int skind, Type1 type,Operand v);
+Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v,int isparam);
 Param *translateArgs(Node *root);
 Type1 translatecond(Node *root,Operand labeltrue,Operand labelfalse);
 Type1 translateExp(Node *root,Operand place);
