@@ -15,14 +15,14 @@ RETURN temp0
 LABEL label2 :
 
 FUNCTION main :
-READ temp4
-m := temp4
+READ temp3
+m := temp3
 IF m > #1 GOTO label3
 GOTO label4
 LABEL label3 :
 ARG m
-temp5 :=  CALL fact
-result := temp5
+temp4 :=  CALL fact
+result := temp4
 GOTO label5
 LABEL label4 :
 result := #1

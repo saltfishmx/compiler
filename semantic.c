@@ -712,9 +712,13 @@ Snode *translateDec(Node *root, int skind, Type1 type)
     {
         Operand v = newoperand(OVARIABLE, NULL);
         Snode *sn = translateVarDec(root->childlist[0], skind, type, v, 0);
+        
         Type1 arrayt = sn->content.type;
-        int size = getsize(arrayt);
-        genintercode(IDEC, v, size);
+        if(arrayt->kind == ARRAY){
+            int size = getsize(arrayt);
+            genintercode(IDEC, v, size);
+        }
+
         return sn;
     }
     else if (matchproduction(root, 3, "VarDec", "ASSIGNOP", "Exp"))
@@ -960,7 +964,7 @@ Type1 translateExp(Node *root, Operand place)
     {
         //LAB3
         Operand t1, t2;
-        if (matchproduction(root->childlist[2], 1, "ID"))
+        if (matchproduction(root->childlist[2], 1, "ID")||matchproduction(root->childlist[2], 1, "INT"))
         {
             t1 = newoperand(OVARIABLE, NULL);
         }
@@ -1027,7 +1031,7 @@ Type1 translateExp(Node *root, Operand place)
     {
         //lab3
         Operand t1, t2;
-        if (matchproduction(root->childlist[0], 1, "ID"))
+        if (matchproduction(root->childlist[0], 1, "ID")||matchproduction(root->childlist[0], 1, "INT"))
         {
             t1 = newoperand(OVARIABLE, NULL);
         }
@@ -1035,7 +1039,7 @@ Type1 translateExp(Node *root, Operand place)
         {
             t1 = newtemp();
         }
-        if (matchproduction(root->childlist[2], 1, "ID"))
+        if (matchproduction(root->childlist[2], 1, "ID")||matchproduction(root->childlist[2], 1, "INT"))
         {
             t2 = newoperand(OVARIABLE, NULL);
         }
@@ -1198,31 +1202,44 @@ Type1 translateExp(Node *root, Operand place)
         {
             printsemanticerror(12, root->childlist[2]->lineno, "num in [] not an integer");
         }
-        Snode *sn1 = contain(root->childlist[0]->childlist[0]->val.s, varient);
+        if(matchproduction(root->childlist[0],1,"ID")){//一维数组or高维数组最前面一截
 
-        //printf("%s\n", root->childlist[0]->childlist[0]->val.s);
+        
+            Snode *sn1 = contain(root->childlist[0]->childlist[0]->val.s, varient);
 
-        int size = getsize(t->u.array.elem);
-        Operand CONSTSIZE = newoperand(OCONSTANT, size);
-        Operand offset = newtemp();
-        genintercode(IMUL, offset, index, CONSTSIZE);
-        if (sn1->specialasparam)
-        {
-            //printf("asdasdasd\n");
-            genintercode(IADD, place, base, offset);
+
+            int size = getsize(t->u.array.elem);
+            Operand CONSTSIZE = newoperand(OCONSTANT, size);
+            Operand offset = newtemp();
+            genintercode(IMUL, offset, index, CONSTSIZE);
+            if (sn1->specialasparam)
+            {
+
+                genintercode(IADD, place, base, offset);
+                //place->kind = OADDRESS;
+            }
+            else
+            {
+                Operand baseaddr = newtemp();
+
+                genintercode(IGETADDR, baseaddr, base);
+
+                genintercode(IADD, place, baseaddr, offset);
+
+                
+            }
+        }
+        else{
+            Operand offset = newtemp();
+            int size = getsize(t->u.array.elem);
+            Operand CONSTSIZE = newoperand(OCONSTANT, size);            
+            genintercode(IMUL,offset,index,CONSTSIZE);
+            genintercode(IADD,place,base,offset);
+        }
+        if(t->u.array.elem->kind!=ARRAY){
             place->kind = OADDRESS;
         }
-        else
-        {
-            Operand baseaddr = newtemp();
-            genintercode(IGETADDR, baseaddr, base);
-
-            genintercode(IADD, place, baseaddr, offset);
-
-            place->kind = OADDRESS;
-        }
-
-        return NULL;
+        return t->u.array.elem;
     }
     else if (matchproduction(root, 3, "Exp", "DOT", "ID"))
     {

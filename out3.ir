@@ -9,14 +9,14 @@ RETURN temp0
 
 FUNCTION main :
 DEC op 8
-temp7 := &op
-*temp7 := #1
+temp6 := &op
+*temp6 := #1
+temp10 := &op
+temp8 := temp10 + #4
+*temp8 := #2
 temp12 := &op
-temp10 := temp12 + #4
-*temp10 := #2
-temp14 := &op
-ARG temp14
-temp13 :=  CALL add
-n := temp13
+ARG temp12
+temp11 :=  CALL add
+n := temp11
 WRITE n
 RETURN #0
