@@ -1,5 +1,6 @@
 
 FUNCTION main :
+DEC n 4
 READ temp0
 n := temp0
 IF n > #0 GOTO label0

@@ -1,38 +1,8 @@
 
-FUNCTION add :
-PARAM temp
-temp1 := &temp
-temp2 := &temp
-temp0 := temp1 + temp2
-RETURN temp0
-
 FUNCTION main :
 i := #0
-j := #0
-LABEL label0 :
-IF i < #2 GOTO label1
-GOTO label2
-LABEL label1 :
-LABEL label3 :
-IF j < #2 GOTO label4
-GOTO label5
-LABEL label4 :
-temp7 := i + j
-temp8 := &op
-temp8 := temp7
-temp10 := j + #1
-j := temp10
-GOTO label3
-LABEL label5 :
-ARG op
-temp12 :=  CALL add
-temp14 := &r
-temp13 := temp12
-temp17 := &r
-WRITE temp16
-temp19 := i + #1
-i := temp19
-j := #0
-GOTO label0
-LABEL label2 :
+DEC j 4
+temp1 := i + #1
+i := temp1
+j := i
 RETURN #0

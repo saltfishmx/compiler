@@ -312,12 +312,14 @@ void translateStmt(Node *root, Snode *func)
     else if (matchproduction(root, 3, "RETURN", "Exp", "SEMI"))
     {
         Operand temp;
-        if(matchproduction(root->childlist[1],1,"ID")){
-            temp = newoperand(OVARIABLE,NULL);
+        if (matchproduction(root->childlist[1], 1, "ID"))
+        {
+            temp = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             temp = newtemp();
-        }        
+        }
         Type1 t1 = func->content.f->rettype;
         Type1 t2 = translateExp(root->childlist[1], temp);
         if (!equalType(t1, t2))
@@ -402,8 +404,8 @@ Snode *translateFunDec(Node *root, Type1 rettype)
             sn->kind = function;
             sn->name = id->val.s;
             sn->next = NULL;
-            Operand func = newoperand(OFUNCTION,sn->name);
-            genintercode(IFUNCTION,func);
+            Operand func = newoperand(OFUNCTION, sn->name);
+            genintercode(IFUNCTION, func);
             int num = 0;
             int *p = &num;
             sn->content.f = (funcinfo *)malloc(sizeof(struct funcinfo_));
@@ -432,8 +434,8 @@ Snode *translateFunDec(Node *root, Type1 rettype)
             sn->name = id->val.s;
 
             sn->next = NULL;
-            Operand func = newoperand(OFUNCTION,sn->name);
-            genintercode(IFUNCTION,func);            
+            Operand func = newoperand(OFUNCTION, sn->name);
+            genintercode(IFUNCTION, func);
             int num = 0;
 
             sn->content.f = (funcinfo *)malloc(sizeof(struct funcinfo_));
@@ -458,11 +460,11 @@ void translateExtDecList(Node *root, Type1 type)
     }
     if (matchproduction(root, 1, "VarDec"))
     {
-        translateVarDec(root->childlist[0], varient, type, NULL,0);
+        translateVarDec(root->childlist[0], varient, type, NULL, 0);
     }
     else if (matchproduction(root, 3, "VarDec", "COMMA", "ExtDecList"))
     {
-        translateVarDec(root->childlist[0], varient, type, NULL,0);
+        translateVarDec(root->childlist[0], varient, type, NULL, 0);
         translateExtDecList(root->childlist[2], type);
     }
     else
@@ -512,17 +514,17 @@ Param *translateParamDec(Node *root)
             printf("error happend in paramdec\n");
             return NULL;
         }
-        Snode *sn = translateVarDec(root->childlist[1], varient, t, NULL,1);
+        Snode *sn = translateVarDec(root->childlist[1], varient, t, NULL, 1);
         if (sn == NULL)
         {
             printf("error happend in paramdec\n");
             return NULL;
         }
-        Operand par = newoperand(OVARIABLE,sn->name);
+        Operand par = newoperand(OVARIABLE, sn->name);
         //printf("par name %s\n",par->u.name);
         //sn->name is temp??
 
-        genintercode(IPARAM,par);
+        genintercode(IPARAM, par);
         Param *p = (Param *)malloc(sizeof(Param));
         p->type = sn->content.type;
         p->tail = NULL;
@@ -709,21 +711,27 @@ Snode *translateDec(Node *root, int skind, Type1 type)
     if (matchproduction(root, 1, "VarDec"))
     {
         Operand v = newoperand(OVARIABLE, NULL);
-        return translateVarDec(root->childlist[0], skind, type, v,0);
+        Snode *sn = translateVarDec(root->childlist[0], skind, type, v, 0);
+        Type1 arrayt = sn->content.type;
+        int size = getsize(arrayt);
+        genintercode(IDEC, v, size);
+        return sn;
     }
     else if (matchproduction(root, 3, "VarDec", "ASSIGNOP", "Exp"))
     {
         Operand v = newoperand(OVARIABLE, NULL);
-        Snode *sn = translateVarDec(root->childlist[0], skind, type, v,0);
+        Snode *sn = translateVarDec(root->childlist[0], skind, type, v, 0);
         if (skind == varient)
         {
             Operand place;
-            if(matchproduction(root->childlist[2],1,"ID")){
-                place = newoperand(OVARIABLE,NULL);
+            if (matchproduction(root->childlist[2], 1, "ID"))
+            {
+                place = newoperand(OVARIABLE, NULL);
             }
-            else{
+            else
+            {
                 place = newtemp();
-            }            
+            }
             Type1 t = translateExp(root->childlist[2], place);
             if (!equalType(type, t))
             {
@@ -731,7 +739,7 @@ Snode *translateDec(Node *root, int skind, Type1 type)
             }
 
             //printf("v->u.name = %s    place->u.name =%s \n" ,v->u.name,place->u.name);
-            
+
             genintercode(IASSIGN, v, place);
         }
         else if (skind == field)
@@ -750,7 +758,7 @@ Snode *translateDec(Node *root, int skind, Type1 type)
         return NULL;
     }
 }
-Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v,int isparam) //VarDec表示对一个变量的定义,该变量可以是一个标识符（例如int a中的a），也可以是一个标识符后面跟着若干对方括号括起来的数字
+Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v, int isparam) //VarDec表示对一个变量的定义,该变量可以是一个标识符（例如int a中的a），也可以是一个标识符后面跟着若干对方括号括起来的数字
 {
     if (debug)
     {
@@ -780,9 +788,11 @@ Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v,int isparam)
         { // insert to symboltable
             if (v == NULL)
             {
-                
-                if (type->kind == ARRAY || type->kind == STRUCTURE){
-                    if(isparam){
+
+                if (type->kind == STRUCTURE)
+                {
+                    if (isparam)
+                    {
                         //printf("debug!!!\n");
                         //printf("sn 111 name%d \n",skind);
                         sn->specialasparam = 1;
@@ -792,11 +802,11 @@ Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v,int isparam)
             else
             {
                 v->u.name = id->val.s;
-                if (type->kind == ARRAY || type->kind == STRUCTURE)
+                if (type->kind == STRUCTURE)
                 {
 
                     int size = getsize(type);
-                    genintercode(IDEC,v,size);
+                    genintercode(IDEC, v, size);
                 }
             }
 
@@ -806,7 +816,7 @@ Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v,int isparam)
     }
     else if (matchproduction(root, 4, "VarDec", "LB", "INT", "RB")) //int a [x][y]
     {
-        Snode *sn = translateVarDec(root->childlist[0], skind, type, v,0);
+        Snode *sn = translateVarDec(root->childlist[0], skind, type, v, 0);
         if (sn != NULL)
         {
             Type1 arrayt = (Type1)(malloc(sizeof(struct Type_)));
@@ -815,6 +825,9 @@ Snode *translateVarDec(Node *root, int skind, Type1 type, Operand v,int isparam)
             arrayt->u.array.size = root->childlist[2]->val.i;
             arrayt->rvalue = 0;
             sn->content.type = arrayt;
+            if(isparam){
+                sn->specialasparam = 1;
+            }
         }
         return sn;
     }
@@ -832,13 +845,15 @@ Param *translateArgs(Node *root)
     }
     if (matchproduction(root, 1, "Exp"))
     {
-        Operand temp ;
-        if(matchproduction(root->childlist[0],1,"ID")){
-            temp = newoperand(OVARIABLE,NULL);
+        Operand temp;
+        if (matchproduction(root->childlist[0], 1, "ID"))
+        {
+            temp = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             temp = newtemp();
-        }           
+        }
         Param *arg = (Param *)malloc(sizeof(struct Param_));
         arg->type = translateExp(root->childlist[0], temp);
         arg->op = temp;
@@ -860,19 +875,23 @@ Type1 translatecond(Node *root, Operand labeltrue, Operand labelfalse)
 {
     if (matchproduction(root, 3, "Exp", "RELOP", "Exp"))
     {
-        Operand t1,t2;
-        if(matchproduction(root->childlist[0],1,"ID")||matchproduction(root->childlist[0],1,"INT")){
-            t1 = newoperand(OVARIABLE,NULL);
+        Operand t1, t2;
+        if (matchproduction(root->childlist[0], 1, "ID") || matchproduction(root->childlist[0], 1, "INT"))
+        {
+            t1 = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             t1 = newtemp();
         }
-        if(matchproduction(root->childlist[2],1,"ID")||matchproduction(root->childlist[2],1,"INT")){
-            t2 = newoperand(OVARIABLE,NULL);
+        if (matchproduction(root->childlist[2], 1, "ID") || matchproduction(root->childlist[2], 1, "INT"))
+        {
+            t2 = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             t2 = newtemp();
-        }   
+        }
         Type1 le = translateExp(root->childlist[0], t1);
         Type1 ri = translateExp(root->childlist[2], t2);
         if (!(le != NULL && le->kind == BASIC && le->u.basic == INT1 && ri != NULL && ri->kind == BASIC && ri->u.basic == INT1))
@@ -940,19 +959,23 @@ Type1 translateExp(Node *root, Operand place)
     if (matchproduction(root, 3, "Exp", "ASSIGNOP", "Exp"))
     {
         //LAB3
-        Operand t1,t2;
-        if(matchproduction(root->childlist[2],1,"ID")){
-            t1 = newoperand(OVARIABLE,NULL);
+        Operand t1, t2;
+        if (matchproduction(root->childlist[2], 1, "ID"))
+        {
+            t1 = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             t1 = newtemp();
         }
-        if(matchproduction(root->childlist[0],1,"ID")){
-            t2 = newoperand(OVARIABLE,NULL);
+        if (matchproduction(root->childlist[0], 1, "ID"))
+        {
+            t2 = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             t2 = newtemp();
-        }        
+        }
         //Operand t1 = newtemp();
         Type1 ri = translateExp(root->childlist[2], t1); //code1 inside
         //Operand t2 = newtemp();
@@ -969,9 +992,10 @@ Type1 translateExp(Node *root, Operand place)
         }
 
         //lab3
-        
+
         genintercode(IASSIGN, t2, t1);
-        if(place!=NULL)genintercode(IASSIGN, place, t2);
+        if (place != NULL)
+            genintercode(IASSIGN, place, t2);
         //
 
         if (le != NULL)
@@ -1002,19 +1026,23 @@ Type1 translateExp(Node *root, Operand place)
     else if (matchproduction(root, 3, "Exp", "PLUS", "Exp") || matchproduction(root, 3, "Exp", "MINUS", "Exp") || matchproduction(root, 3, "Exp", "STAR", "Exp") || matchproduction(root, 3, "Exp", "DIV", "Exp"))
     {
         //lab3
-        Operand t1,t2;
-        if(matchproduction(root->childlist[0],1,"ID")){
-            t1 = newoperand(OVARIABLE,NULL);
+        Operand t1, t2;
+        if (matchproduction(root->childlist[0], 1, "ID"))
+        {
+            t1 = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             t1 = newtemp();
         }
-        if(matchproduction(root->childlist[2],1,"ID")){
-            t2 = newoperand(OVARIABLE,NULL);
+        if (matchproduction(root->childlist[2], 1, "ID"))
+        {
+            t2 = newoperand(OVARIABLE, NULL);
         }
-        else{
+        else
+        {
             t2 = newtemp();
-        }   
+        }
 
         Type1 le = translateExp(root->childlist[0], t1);
         Type1 ri = translateExp(root->childlist[2], t2);
@@ -1066,7 +1094,7 @@ Type1 translateExp(Node *root, Operand place)
         //genintercode(ISUB, place, CONS0, t1);
         t1->u.value *= -1;
         //place = newoperand(OCONSTANT,t1->u.value);
-        genintercode(IASSIGN,place,t1);
+        genintercode(IASSIGN, place, t1);
         return t;
     }
 
@@ -1098,15 +1126,17 @@ Type1 translateExp(Node *root, Operand place)
             {
                 while (p != NULL)
                 {
-                    if(p->type->kind == STRUCTURE){
+                    if (p->type->kind == STRUCTURE || p->type->kind == ARRAY)
+                    {
                         Operand temp = newtemp();
-                        genintercode(IGETADDR,temp,p->op);
-                        genintercode(IARG,temp);
+                        genintercode(IGETADDR, temp, p->op);
+                        genintercode(IARG, temp);
                     }
-                    else{
+                    else
+                    {
                         genintercode(IARG, p->op);
                     }
-                    
+
                     p = p->tail;
                 }
                 Operand f = newoperand(OFUNCTION, id->val.s);
@@ -1159,36 +1189,38 @@ Type1 translateExp(Node *root, Operand place)
         {
             printsemanticerror(10, root->childlist[0]->lineno, "not an array");
         }
-        if(root->childlist[2]->val.i!=0){
-            Operand index = newtemp();
-            Type1 t1 = translateExp(root->childlist[2], index);
-            if (t1 == NULL)
-                return NULL;
-            if (t1->kind != BASIC || t1->u.basic != INT1)
-            {
-                printsemanticerror(12, root->childlist[2]->lineno, "num in [] not an integer");
-            }
-            int size = getsize(t->u.array.elem);
-            Operand CONSTSIZE = newoperand(OCONSTANT, size);
-            Operand offset = newtemp();
-            genintercode(IMUL, offset, index, CONSTSIZE);
+
+        Operand index = newtemp();
+        Type1 t1 = translateExp(root->childlist[2], index);
+        if (t1 == NULL)
+            return NULL;
+        if (t1->kind != BASIC || t1->u.basic != INT1)
+        {
+            printsemanticerror(12, root->childlist[2]->lineno, "num in [] not an integer");
+        }
+        Snode *sn1 = contain(root->childlist[0]->childlist[0]->val.s, varient);
+
+        //printf("%s\n", root->childlist[0]->childlist[0]->val.s);
+
+        int size = getsize(t->u.array.elem);
+        Operand CONSTSIZE = newoperand(OCONSTANT, size);
+        Operand offset = newtemp();
+        genintercode(IMUL, offset, index, CONSTSIZE);
+        if (sn1->specialasparam)
+        {
+            //printf("asdasdasd\n");
+            genintercode(IADD, place, base, offset);
+            place->kind = OADDRESS;
+        }
+        else
+        {
             Operand baseaddr = newtemp();
             genintercode(IGETADDR, baseaddr, base);
-            place->kind = OADDRESS;
-            genintercode(IADD, place, baseaddr, offset);
-        }
-        else{
-            Operand index = newoperand(OCONSTANT,0);
-            Type1 t1 = translateExp(root->childlist[2], index);
-            if (t1 == NULL)
-                return NULL;
-            if (t1->kind != BASIC || t1->u.basic != INT1)
-            {
-                printsemanticerror(12, root->childlist[2]->lineno, "num in [] not an integer");
-            }
-            genintercode(IGETADDR,place,base);
-        }
 
+            genintercode(IADD, place, baseaddr, offset);
+
+            place->kind = OADDRESS;
+        }
 
         return NULL;
     }
@@ -1196,7 +1228,6 @@ Type1 translateExp(Node *root, Operand place)
     {
         Operand temp = newtemp();
         Type1 t = translateExp(root->childlist[0], temp);
-
 
         if (t == NULL)
             return NULL;
@@ -1213,7 +1244,7 @@ Type1 translateExp(Node *root, Operand place)
             return NULL;
         }
         FieldList f = t->u.structure.fild;
-        Snode *sn1 = contain(root->childlist[0]->childlist[0]->val.s,varient); 
+        Snode *sn1 = contain(root->childlist[0]->childlist[0]->val.s, varient);
         //printf("%s\n",root->childlist[0]->childlist[0]->val.s);
         //if(sn1==NULL)printf("sn->name:\n");
         int offset = 0;
@@ -1222,36 +1253,40 @@ Type1 translateExp(Node *root, Operand place)
 
             if (equals(id->val.s, f->name))
             {
-                if(offset!=0){
-                    if(sn1->specialasparam){
+                if (offset != 0)
+                {
+                    if (sn1->specialasparam)
+                    {
                         Operand constoffset = newoperand(OCONSTANT, offset);
                         Operand tempaddr = newtemp();
-                        genintercode(IADD,tempaddr,temp,constoffset);
+                        genintercode(IADD, tempaddr, temp, constoffset);
                         tempaddr->kind = OADDRESS;
-                        genintercode(IASSIGN,place,tempaddr);
+                        genintercode(IASSIGN, place, tempaddr);
                     }
-                    else{
+                    else
+                    {
                         Operand tempaddr = newtemp();
-                        genintercode(IGETADDR, tempaddr, temp);                    
+                        genintercode(IGETADDR, tempaddr, temp);
                         Operand constoffset = newoperand(OCONSTANT, offset);
-                        
+
                         genintercode(IADD, place, tempaddr, constoffset);
                         place->kind = OADDRESS;
                     }
-
                 }
-                else{
-                    if(sn1->specialasparam){
+                else
+                {
+                    if (sn1->specialasparam)
+                    {
                         temp->kind = OADDRESS;
-                        genintercode(IASSIGN,place,temp);
+                        genintercode(IASSIGN, place, temp);
                     }
-                    else{
+                    else
+                    {
                         place->kind = OADDRESS;
-                        genintercode(IGETADDR,place,temp);
+                        genintercode(IGETADDR, place, temp);
                     }
-                   
                 }
-                
+
                 return f->type;
             }
             offset += getsize(f->type);
@@ -1293,11 +1328,12 @@ Type1 translateExp(Node *root, Operand place)
         //lab3:
         int value = root->childlist[0]->val.i;
         //Operand v = newoperand(OCONSTANT, value);
-        if(place!=NULL)free(place);
+        if (place != NULL)
+            free(place);
         place = newoperand(OCONSTANT, value);
 
         //genintercode(IASSIGN, place, v);
-        
+
         return t;
     }
     else if (matchproduction(root, 1, "FLOAT")) //lab3 not consider this
@@ -1336,7 +1372,8 @@ int checkargs(Param *p1, Param *p2, int num)
 }
 void printsemanticerror(int errornumber, int line, char *msg)
 {
-    if(lab3){
+    if (lab3)
+    {
         return;
     }
     printf("Error type %d at Line %d: %s.\n", errornumber, line, msg);
