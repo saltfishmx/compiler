@@ -27,7 +27,7 @@ char *news(char *s){
 Operand newoperand(int kind,void *u){
     Operand p = (Operand)malloc(sizeof(struct Operand_));
     p->kind = kind;
-    p->specialasparam = 0;
+    //p->specialasparam = 0;
     if(kind == OCONSTANT){
         p->u.value = (int)(u);
     }
