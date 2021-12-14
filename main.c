@@ -4,6 +4,7 @@
 #include"symbol.h"
 #include"semantic.h"
 #include "inter.h"
+#include "assembly.h"
 extern int yyparse();
 extern void yyrestart(FILE*);
 extern Snode *symboltable[];
@@ -31,6 +32,7 @@ int main(int argc, char **argv)
         inithash(symboltable);
         translateProgram(root);
         printintercode(fout,ilist);
+        //printobjectcode(fout,ilist);
         //preorder(root,0);
     }
     return 0;

@@ -1094,11 +1094,17 @@ Type1 translateExp(Node *root, Operand place)
         {
             printsemanticerror(7, root->childlist[0]->lineno, "Type mismatched for operands.");
         }
-        //Operand CONS0 = newoperand(OCONSTANT, 0);
-        //genintercode(ISUB, place, CONS0, t1);
-        t1->u.value *= -1;
+
+       
         //place = newoperand(OCONSTANT,t1->u.value);
-        genintercode(IASSIGN, place, t1);
+        if(t1->kind == OCONSTANT){
+            t1->u.value *= -1;
+            genintercode(IASSIGN, place, t1);
+        }
+        else{
+            Operand CONS0 = newoperand(OCONSTANT, 0);
+            genintercode(ISUB, place, CONS0, t1);
+        }
         return t;
     }
 

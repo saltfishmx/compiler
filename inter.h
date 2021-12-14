@@ -89,6 +89,7 @@ struct inode_{
 void addtoilist(inode* n);
 Operand newoperand(int kind,void *u);
 //Operand newoperand(int kind,...);
+char *news(char *s);
 Operand newlabel();
 Operand newtemp();
 void genintercode(int kind,...);

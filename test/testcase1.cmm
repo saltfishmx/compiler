@@ -1,0 +1,13 @@
+int main() {
+    int a = 10, b = 15, c = 22;
+    int result = 0;
+    a = (-a) + c + (-(15 * a));
+    write(a);
+    b = 11 * b - (c + a * a) * a;
+    write(b);
+    c = a * (a / b) + c;
+    write(c);
+    result = 4 * a + b / 10 + a * c;
+    write(result);
+    return 0;
+}
