@@ -31,8 +31,8 @@ int main(int argc, char **argv)
     if(!error){
         inithash(symboltable);
         translateProgram(root);
-        printintercode(fout,ilist);
-        //printobjectcode(fout,ilist);
+        //printintercode(fout,ilist);
+        printobjectcode(fout,ilist);
         //preorder(root,0);
     }
     return 0;
