@@ -926,7 +926,7 @@ Type1 translatecond(Node *root, Operand labeltrue, Operand labelfalse)
         res->rvalue = 1;
         return res;
     }
-    else if (matchproduction(root, 3, "Exp", "AND", "Exp"))
+    else if (matchproduction(root, 3, "Exp", "OR", "Exp"))
     {
         Operand label1 = newlabel();
         translatecond(root->childlist[0], labeltrue, label1);
