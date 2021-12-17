@@ -99,13 +99,13 @@ void genintercode(int kind,...){
             printf("error,op1 is null\n kind:%d",kind);
 
         }    
-        /*    
+            
         if(op1->kind == OADDRESS && op2->kind ==OADDRESS){  // case like *x = *y ,should break up into two intercodes
             Operand temp = newtemp();
             genintercode(IASSIGN,temp,op2);
             op2 = temp; //temp take place of op2 then
         }
-        */
+        
         ic->u.assign.left = op1;
         ic->u.assign.right = op2;
         va_end(valist);
@@ -160,6 +160,16 @@ void genintercode(int kind,...){
         relop = va_arg(valist,Operand);
         op2 = va_arg(valist,Operand);
         dst = va_arg(valist,Operand);
+        if(op1->kind==OADDRESS){
+            Operand temp1 = newtemp();
+            genintercode(IASSIGN,temp1,op1);
+            op1 = temp1;            
+        }
+        if(op2->kind==OADDRESS){
+            Operand temp2 = newtemp();
+            genintercode(IASSIGN,temp2,op2);
+            op2 = temp2;            
+        }        
         ic->u.ifgoto.op1 = op1; 
         ic->u.ifgoto.relop = relop;
         ic->u.ifgoto.op2 = op2;
@@ -174,6 +184,7 @@ void genintercode(int kind,...){
     
 }
 void printop(FILE *f,Operand op){
+
     if(op->kind == OCONSTANT){
         fprintf(f,"#%d",op->u.value);
     }
@@ -283,10 +294,16 @@ void printic(FILE *f,InterCode ic){
         break;
     case IIFGOTO:
         fprintf(f,"IF ");
+        if(ic->u.ifgoto.op1->kind == OADDRESS){ 
+            fprintf(f,"*");
+        }        
         printop(f,ic->u.ifgoto.op1);
         fprintf(f," ");
         printop(f,ic->u.ifgoto.relop);
         fprintf(f," ");
+        if(ic->u.ifgoto.op2->kind == OADDRESS){ 
+            fprintf(f,"*");
+        }          
         printop(f,ic->u.ifgoto.op2);
         fprintf(f," GOTO ");
         printop(f,ic->u.ifgoto.dst);

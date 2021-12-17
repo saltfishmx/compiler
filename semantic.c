@@ -926,7 +926,7 @@ Type1 translatecond(Node *root, Operand labeltrue, Operand labelfalse)
         res->rvalue = 1;
         return res;
     }
-    else if (matchproduction(root, 3, "Exp", "AND", "Exp"))
+    else if (matchproduction(root, 3, "Exp", "OR", "Exp"))
     {
         Operand label1 = newlabel();
         translatecond(root->childlist[0], labeltrue, label1);
@@ -947,6 +947,18 @@ Type1 translatecond(Node *root, Operand labeltrue, Operand labelfalse)
         genintercode(IGOTO, labelfalse);
         return res;
     }
+}
+Param *reverse_parm(Param *head){
+    Param *prev = NULL;
+    Param *curr = head;
+    while(curr!=NULL){
+        Param *next = curr->tail;
+        curr->tail = prev;
+        prev = curr;
+        curr = next;
+        
+    }
+    return prev;
 }
 Type1 translateExp(Node *root, Operand place)
 {
@@ -1134,6 +1146,8 @@ Type1 translateExp(Node *root, Operand place)
             }
             else
             {
+                Param * head;
+                p = reverse_parm(p);
                 while (p != NULL)
                 {
                     if (p->type->kind == STRUCTURE || p->type->kind == ARRAY)
@@ -1146,9 +1160,10 @@ Type1 translateExp(Node *root, Operand place)
                     {
                         genintercode(IARG, p->op);
                     }
-
+                    head = p;
                     p = p->tail;
                 }
+                head = reverse_parm(head);
                 Operand f = newoperand(OFUNCTION, id->val.s);
                 genintercode(ICALL, place, f);
             }

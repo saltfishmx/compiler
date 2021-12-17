@@ -29,4 +29,5 @@ Type1 translatecond(Node *root,Operand labeltrue,Operand labelfalse);
 Type1 translateExp(Node *root,Operand place);
 int checkargs(Param *p1, Param *p2, int num);
 void printsemanticerror(int errornumber, int line, char *msg);
+Param *reverse_parm(Param *head);
 #endif
